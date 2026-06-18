@@ -1,0 +1,11 @@
+{
+  "agent_id": "external_chat_only_agent",
+  "checkpoint_id": "fomo_merge",
+  "answer": {
+    "tool_calls": [],
+    "final_action": "",
+    "order_intent": null,
+    "human_confirmation_required": false,
+    "reason": ""
+  }
+}

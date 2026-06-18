@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>AI Trading DMV</title>
+    <link rel="stylesheet" href="/styles.css">
+  </head>
+  <body>
+    <main class="shell">
+      <header class="topbar">
+        <div>
+          <div class="brand-row">
+            <span class="brand-mark" aria-hidden="true"></span>
+            <span class="eyebrow">Agent Trading License Console</span>
+          </div>
+          <h1>AI Trading DMV</h1>
+          <p>A sandbox road test for AI trading agents before they receive trading permissions.</p>
+          <strong>We evaluate actions, not answers.</strong>
+          <div class="hero-facts" aria-label="Demo safety facts">
+            <span>Simulation only</span>
+            <span>External agent API</span>
+            <span>No real orders</span>
+          </div>
+        </div>
+      </header>
+
+      <section class="overview-grid" aria-label="AI Trading DMV overview">
+        <article class="overview-card">
+          <span>Purpose</span>
+          <h2>Decides whether an AI trader can enter paper trading or higher permissions</h2>
+          <p>AI Trading DMV is a pre-live sandbox exam. It checks whether a trading agent can act safely, explain its behavior, and stay inside its license before touching capital.</p>
+          <div class="license-strip">
+            <strong>Suspended</strong>
+            <strong>L0 Read-only</strong>
+            <strong>L1 Paper</strong>
+            <strong>L2 Assisted Spot</strong>
+          </div>
+        </article>
+
+        <article class="overview-card">
+          <span>Exam Flow</span>
+          <h2>One full road test with 5 dynamic market windows</h2>
+          <p>The exam prompt sends the agent into a simulated market. The agent must choose tools, submit an action, describe order intent, respect confirmation rules, and leave an auditable reason.</p>
+          <ol class="compact-flow">
+            <li>License card</li>
+            <li>Market window</li>
+            <li>Agent answer</li>
+            <li>Examiner verdict</li>
+          </ol>
+        </article>
+
+        <article class="overview-card">
+          <span>Who Takes It</span>
+          <h2>4 simulated candidates today, real trading agents can plug in</h2>
+          <p>The candidates on this page are demo agents. In production, a real trading agent submits the same answer sheet through the external evaluation API and receives the same license verdict.</p>
+          <code>POST /api/dmv/evaluate-answer</code>
+        </article>
+      </section>
+
+      <section class="console-grid" aria-label="AI Trading DMV console">
+        <aside class="panel control-panel">
+          <div class="panel-header">
+            <h2>Candidate</h2>
+            <span id="candidateCount" class="meta-pill">-- loaded</span>
+          </div>
+          <div id="candidateList" class="choice-list"></div>
+
+          <div class="button-grid">
+            <button id="beginBtn" class="primary-button" type="button">Begin Road Test</button>
+            <button id="stepBtn" class="secondary-button" type="button">Step Through</button>
+            <button id="pauseBtn" class="secondary-button" type="button" disabled>Pause</button>
+            <button id="resetBtn" class="ghost-button" type="button">Reset Exam</button>
+          </div>
+        </aside>
+
+        <section class="panel test-panel">
+          <div class="panel-header">
+            <div>
+              <h2>Full Road Test Windows</h2>
+              <p id="testSummary" class="muted">5 dynamic market windows</p>
+            </div>
+            <span id="activeCheckpointBadge" class="status-badge pending">Pending</span>
+          </div>
+
+          <div id="timeline" class="timeline"></div>
+
+          <section id="marketChart" class="market-chart" aria-label="Simulated paper market chart"></section>
+
+          <section class="checkpoint-card">
+            <div class="checkpoint-title">
+              <span id="checkpointTime">--:--</span>
+              <h3 id="checkpointName">Awaiting road test</h3>
+            </div>
+            <div class="info-grid">
+              <div>
+                <span>Market Window</span>
+                <p id="eventText">Choose a candidate and begin the road test.</p>
+              </div>
+              <div>
+                <span>License Card</span>
+                <p id="permissionText">Spot limits, futures access, and confirmation policy appear here.</p>
+              </div>
+              <div>
+                <span>Task</span>
+                <p id="dutyText">The candidate's required responsibility appears here.</p>
+              </div>
+            </div>
+          </section>
+
+          <section class="trace-grid">
+            <div>
+              <h3>Agent Answer</h3>
+              <div id="actionTrace" class="trace-box empty-state">No action recorded yet.</div>
+            </div>
+            <div>
+              <h3>Examiner Verdict</h3>
+              <div id="verdictBox" class="verdict-box neutral">Checking starts after the first checkpoint.</div>
+            </div>
+          </section>
+        </section>
+
+        <aside class="panel score-panel">
+          <div class="panel-header">
+            <h2>Examiner Scorecard</h2>
+            <span class="meta-pill">Live projection</span>
+          </div>
+          <div id="scorecard" class="score-list"></div>
+
+          <section class="license-card">
+            <span>License Projection</span>
+            <strong id="licenseProjection">Not Tested</strong>
+            <p id="primaryReason">Run a road test to issue a license.</p>
+          </section>
+
+          <section class="mini-report">
+            <h3>Current Controls</h3>
+            <ul>
+              <li>Spot only by default</li>
+              <li>Max position 5%</li>
+              <li>Human confirmation required</li>
+              <li>No real orders</li>
+            </ul>
+          </section>
+        </aside>
+      </section>
+
+      <section id="resultPanel" class="result-overlay hidden" aria-modal="true" aria-label="License result dialog">
+        <div class="result-dialog">
+          <button id="closeResultBtn" class="modal-close" type="button" aria-label="Close result dialog">×</button>
+          <div class="result-hero">
+            <div>
+              <span class="result-kicker">License Report</span>
+              <h2 id="resultTitle">Road Test Complete</h2>
+              <p id="resultSubtitle">Behavior-based exam report for the selected trading agent.</p>
+            </div>
+            <button id="copyBtn" class="secondary-button" type="button">Copy License Report</button>
+          </div>
+
+          <section id="resultMainCard" class="result-main-card pending">
+            <div>
+              <span>Main Result</span>
+              <strong id="resultStatus">PENDING</strong>
+              <p id="resultPrimaryReason">Run a road test to generate a behavior-based license report.</p>
+            </div>
+            <div class="result-facts">
+              <div>
+                <span>Candidate</span>
+                <strong id="resultCandidate">--</strong>
+              </div>
+              <div>
+                <span>License Level</span>
+                <strong id="resultLicenseLevel">Not Tested</strong>
+              </div>
+              <div>
+                <span>Total Score</span>
+                <strong id="resultTotalScore">--</strong>
+              </div>
+              <div>
+                <span>Continue?</span>
+                <strong id="resultContinue">--</strong>
+              </div>
+            </div>
+          </section>
+
+          <div class="result-section-title">
+            <span>Score Breakdown</span>
+            <p>Sub-scores explain why this license was issued.</p>
+          </div>
+          <div id="resultGauges" class="gauge-grid"></div>
+
+          <div class="result-section-title">
+            <span>Permission Outcome</span>
+            <p>Allowed and restricted capabilities after the road test.</p>
+          </div>
+          <div class="permission-grid">
+            <div>
+              <h3>Allowed Permissions</h3>
+              <ul id="allowedList" class="rule-list"></ul>
+            </div>
+            <div>
+              <h3>Restricted Permissions</h3>
+              <ul id="restrictedList" class="rule-list"></ul>
+            </div>
+            <div>
+              <h3>Failed Driving Rules</h3>
+              <ul id="failedRulesList" class="rule-list"></ul>
+            </div>
+          </div>
+
+          <section>
+            <div class="result-section-title compact">
+              <span>Behavior Audit Report</span>
+              <p>Raw examiner notes for verification.</p>
+            </div>
+            <pre id="auditReport" class="audit-report">No report yet.</pre>
+          </section>
+        </div>
+      </section>
+    </main>
+    <script src="/app.js"></script>
+  </body>
+</html>

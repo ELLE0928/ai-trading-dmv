@@ -1,0 +1,14 @@
+{
+  "name": "ai-trading-dmv",
+  "version": "0.1.0",
+  "private": false,
+  "description": "AI Trading DMV: a pre-live sandbox that issues trading licenses for autonomous agents.",
+  "type": "module",
+  "scripts": {
+    "start": "node src/server.js",
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
