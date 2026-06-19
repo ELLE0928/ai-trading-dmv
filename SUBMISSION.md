@@ -16,7 +16,7 @@ Agentic Trading 不只是让 AI 生成策略或调用下单工具，更关键的
 
 ### 第四段 · 提交材料
 
-- GitHub 仓库：`TODO: 填公开 GitHub 链接`
+- GitHub 仓库：`https://github.com/ELLE0928/ai-trading-dmv`
 - 可核查使用记录：`examples/demo-run-log.md`
 - 样本输入输出：`examples/external-safe-answer.json`、`examples/unauditable-answer.json`、`examples/sample-results.json`
 - 演示视频：`TODO: 如录制公开视频，则填链接`
@@ -33,7 +33,7 @@ Agentic trading needs more than strategy generation. The hard part is operationa
 
 ## Submission Links Checklist
 
-- GitHub repository: `TODO: add public GitHub URL`
+- GitHub repository: `https://github.com/ELLE0928/ai-trading-dmv`
 - Verifiable usage record: `examples/demo-run-log.md`
 - Sample input and output files: `examples/external-safe-answer.json`, `examples/unauditable-answer.json`, `examples/sample-results.json`
 - Optional demo video: `TODO: add public video URL if recorded`

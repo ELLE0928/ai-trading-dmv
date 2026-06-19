@@ -15,25 +15,22 @@ Done locally:
 - Local tests pass with `npm test`.
 - Local Git commits exist on branch `main`.
 
+Done externally:
+
+- Public GitHub repository: `https://github.com/ELLE0928/ai-trading-dmv`
+
 Not done yet:
 
-- Public GitHub repository.
 - Public demo/video URL.
 - Final hackathon form submission.
 
-## 1. Log In To GitHub CLI
+## 1. GitHub CLI Login
 
-Run:
+Done. Current logged-in account:
 
-```bash
-gh auth login
+```text
+ELLE0928
 ```
-
-Recommended choices:
-
-- GitHub.com
-- HTTPS
-- Login with a web browser
 
 Success sign:
 
@@ -43,12 +40,12 @@ gh auth status
 
 shows that you are logged in.
 
-## 2. Create Public GitHub Repository
+## 2. Public GitHub Repository
 
-After GitHub login succeeds, run this from the project folder:
+Done:
 
-```bash
-gh repo create ai-trading-dmv --public --source=. --remote=origin --push
+```text
+https://github.com/ELLE0928/ai-trading-dmv
 ```
 
 Success sign:
@@ -59,20 +56,15 @@ Success sign:
 
 ## 3. Update Submission Links
 
-After the GitHub repo exists, replace the TODO placeholders in:
+The GitHub repository URL has been filled into:
 
 ```text
 SUBMISSION.md
 ```
 
-with:
+Remaining success sign:
 
-- the public GitHub repository URL
-- optional public demo video URL, if recorded
-
-Success sign:
-
-- `SUBMISSION.md` contains no GitHub URL TODO.
+- If a public demo video is recorded, add that URL to `SUBMISSION.md`.
 
 ## 4. Optional Demo Video
 
