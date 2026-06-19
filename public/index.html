@@ -83,17 +83,6 @@
             <span id="activeCheckpointBadge" class="status-badge pending">Pending</span>
           </div>
 
-          <section id="examProgress" class="exam-progress idle" aria-live="polite">
-            <div>
-              <span id="examProgressLabel">Ready for road test</span>
-              <strong id="examProgressStatus">Select a candidate, then begin.</strong>
-            </div>
-            <div class="progress-meter" aria-hidden="true">
-              <i id="examProgressBar"></i>
-            </div>
-            <p id="examProgressMeta">The operation area will lock while the exam is running.</p>
-          </section>
-
           <div id="timeline" class="timeline"></div>
 
           <section id="marketChart" class="market-chart" aria-label="Simulated paper market chart"></section>
@@ -155,6 +144,17 @@
           </section>
         </aside>
       </section>
+
+      <aside id="examProgress" class="exam-timer hidden" aria-live="polite">
+        <span id="examProgressLabel">Road test in progress</span>
+        <strong id="examProgressStatus">Window 1 of 5</strong>
+        <div class="timer-row">
+          <b id="examProgressMeta">20s left</b>
+          <div class="timer-meter" aria-hidden="true">
+            <i id="examProgressBar"></i>
+          </div>
+        </div>
+      </aside>
 
       <section id="resultPanel" class="result-overlay hidden" aria-modal="true" aria-label="License result dialog">
         <div class="result-dialog">

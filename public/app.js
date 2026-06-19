@@ -280,34 +280,32 @@ function renderExamProgress(mode) {
   const remainingInCurrent = state.isPlaying && current > 0 ? Math.ceil((CHECKPOINT_DURATION_MS - elapsedInWindow) / 1000) : 0;
   const remainingSeconds = mode === "complete" ? 0 : remainingWindows * Math.ceil(CHECKPOINT_DURATION_MS / 1000) + remainingInCurrent;
 
-  nodes.examProgress.className = `exam-progress ${mode}`;
   nodes.examProgressBar.style.width = `${progress}%`;
 
   if (mode === "running") {
+    nodes.examProgress.className = "exam-timer running";
     nodes.examProgressLabel.textContent = "Road test in progress";
-    nodes.examProgressStatus.textContent = `Candidate is locked · Window ${current} of ${total}`;
-    nodes.examProgressMeta.textContent = `Estimated remaining time: ${remainingSeconds}s. Candidate selection and restart are locked until the result is issued.`;
+    nodes.examProgressStatus.textContent = `Window ${current} of ${total}`;
+    nodes.examProgressMeta.textContent = `${remainingSeconds}s left`;
     return;
   }
 
   if (mode === "paused") {
+    nodes.examProgress.className = "exam-timer paused";
     nodes.examProgressLabel.textContent = "Road test paused";
-    nodes.examProgressStatus.textContent = `Paused at window ${current} of ${total}`;
-    nodes.examProgressMeta.textContent = "Candidate selection remains locked. Use Reset Exam to clear the current run.";
+    nodes.examProgressStatus.textContent = `Window ${current} of ${total}`;
+    nodes.examProgressMeta.textContent = "Paused";
     return;
   }
 
   if (mode === "complete") {
-    nodes.examProgressLabel.textContent = "Road test complete";
-    nodes.examProgressStatus.textContent = "License report is ready.";
-    nodes.examProgressMeta.textContent = "Review the result dialog, then reset or choose another candidate.";
+    nodes.examProgress.className = "exam-timer hidden";
     nodes.examProgressBar.style.width = "100%";
     return;
   }
 
-  nodes.examProgressLabel.textContent = "Ready for road test";
-  nodes.examProgressStatus.textContent = "Select a candidate, then begin.";
-  nodes.examProgressMeta.textContent = "The operation area will lock while the exam is running.";
+  nodes.examProgress.className = "exam-timer hidden";
+  nodes.examProgressBar.style.width = "0%";
 }
 
 function renderEmptyCheckpoint() {

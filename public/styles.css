@@ -412,94 +412,6 @@ h3 {
   background: var(--surface-alt);
 }
 
-.exam-progress {
-  display: grid;
-  grid-template-columns: minmax(240px, 0.7fr) minmax(260px, 1fr);
-  gap: 12px 16px;
-  align-items: center;
-  margin-bottom: 14px;
-  padding: 14px;
-  border: 1px solid var(--line);
-  border-left: 6px solid var(--line-strong);
-  background: #fff;
-}
-
-.exam-progress div:first-child {
-  min-width: 0;
-}
-
-.exam-progress span {
-  display: block;
-  margin-bottom: 5px;
-  color: var(--muted);
-  font-size: 11px;
-  font-weight: 900;
-  text-transform: uppercase;
-}
-
-.exam-progress strong {
-  display: block;
-  color: var(--navy);
-  font-size: 18px;
-  line-height: 1.15;
-}
-
-.exam-progress p {
-  grid-column: 1 / -1;
-  margin: 0;
-  color: var(--muted);
-  font-size: 13px;
-  line-height: 1.35;
-}
-
-.exam-progress.running {
-  border-color: rgba(152, 105, 12, 0.38);
-  border-left-color: var(--amber);
-  background: var(--amber-soft);
-}
-
-.exam-progress.running strong {
-  color: var(--amber);
-}
-
-.exam-progress.paused {
-  border-color: rgba(14, 36, 52, 0.2);
-  border-left-color: var(--navy);
-  background: #eaf1f6;
-}
-
-.exam-progress.complete {
-  border-color: rgba(37, 122, 79, 0.38);
-  border-left-color: var(--green);
-  background: var(--green-soft);
-}
-
-.exam-progress.complete strong {
-  color: var(--green);
-}
-
-.progress-meter {
-  height: 12px;
-  border: 1px solid rgba(14, 36, 52, 0.14);
-  background: rgba(255, 255, 255, 0.64);
-}
-
-.progress-meter i {
-  display: block;
-  width: 0;
-  height: 100%;
-  background: var(--navy);
-  transition: width 220ms linear;
-}
-
-.exam-progress.running .progress-meter i {
-  background: var(--amber);
-}
-
-.exam-progress.complete .progress-meter i {
-  background: var(--green);
-}
-
 .timeline {
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
@@ -893,6 +805,82 @@ h3 {
   display: none;
 }
 
+.exam-timer {
+  position: fixed;
+  right: 22px;
+  bottom: 22px;
+  z-index: 18;
+  width: min(320px, calc(100vw - 32px));
+  padding: 14px;
+  border: 1px solid rgba(152, 105, 12, 0.42);
+  border-left: 6px solid var(--amber);
+  background: rgba(251, 240, 217, 0.96);
+  box-shadow: 0 18px 44px rgba(14, 36, 52, 0.16);
+  backdrop-filter: blur(8px);
+}
+
+.exam-timer.hidden {
+  display: none;
+}
+
+.exam-timer span {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--amber);
+  font-size: 11px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.exam-timer strong {
+  display: block;
+  color: var(--navy);
+  font-size: 20px;
+  line-height: 1.1;
+}
+
+.timer-row {
+  display: grid;
+  grid-template-columns: auto minmax(120px, 1fr);
+  gap: 10px;
+  align-items: center;
+  margin-top: 12px;
+}
+
+.timer-row b {
+  color: var(--ink);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 13px;
+}
+
+.timer-meter {
+  height: 10px;
+  border: 1px solid rgba(14, 36, 52, 0.14);
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.timer-meter i {
+  display: block;
+  width: 0;
+  height: 100%;
+  background: var(--amber);
+  transition: width 220ms linear;
+}
+
+.exam-timer.paused {
+  border-color: rgba(14, 36, 52, 0.2);
+  border-left-color: var(--navy);
+  background: rgba(234, 241, 246, 0.96);
+}
+
+.exam-timer.paused span {
+  color: var(--navy);
+}
+
+.exam-timer.paused .timer-meter i {
+  background: var(--navy);
+}
+
 .result-overlay {
   position: fixed;
   inset: 0;
@@ -1203,7 +1191,6 @@ h3 {
   .market-chart,
   .result-main-card,
   .result-facts,
-  .exam-progress,
   .gauge-grid {
     grid-template-columns: 1fr;
   }
