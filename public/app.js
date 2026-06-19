@@ -6,14 +6,23 @@ const state = {
   result: null,
   activeIndex: -1,
   timer: null,
+  progressTimer: null,
+  checkpointStartedAt: null,
   isPlaying: false
 };
+
+const CHECKPOINT_DURATION_MS = 3600;
 
 const nodes = {
   candidateCount: document.querySelector("#candidateCount"),
   candidateList: document.querySelector("#candidateList"),
   testSummary: document.querySelector("#testSummary"),
   activeCheckpointBadge: document.querySelector("#activeCheckpointBadge"),
+  examProgress: document.querySelector("#examProgress"),
+  examProgressLabel: document.querySelector("#examProgressLabel"),
+  examProgressStatus: document.querySelector("#examProgressStatus"),
+  examProgressBar: document.querySelector("#examProgressBar"),
+  examProgressMeta: document.querySelector("#examProgressMeta"),
   timeline: document.querySelector("#timeline"),
   marketChart: document.querySelector("#marketChart"),
   checkpointTime: document.querySelector("#checkpointTime"),
@@ -76,22 +85,34 @@ async function init() {
   renderEmptyTimeline();
   renderMarketChart();
   renderScorecard();
+  renderExamProgress("idle");
 }
 
 async function beginRoadTest() {
   pausePlayback();
-  state.result = await fetchJson("/api/dmv/run", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      candidate_id: state.selectedCandidateId,
-      test_id: state.selectedTestId
-    })
-  });
+  setOperationLocked(true);
+  try {
+    state.result = await fetchJson("/api/dmv/run", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        candidate_id: state.selectedCandidateId,
+        test_id: state.selectedTestId
+      })
+    });
+  } catch (error) {
+    setOperationLocked(false);
+    renderExamProgress("idle");
+    nodes.verdictBox.className = "verdict-box fail";
+    nodes.verdictBox.textContent = error.message;
+    return;
+  }
   state.activeIndex = 0;
   state.isPlaying = true;
+  state.checkpointStartedAt = Date.now();
   nodes.pauseBtn.disabled = false;
   nodes.resultPanel.classList.add("hidden");
+  startProgressTicker();
   renderActiveCheckpoint();
   scheduleNext();
 }
@@ -104,6 +125,7 @@ function stepThrough() {
   }
   if (state.activeIndex < state.result.timeline.length - 1) {
     state.activeIndex += 1;
+    state.checkpointStartedAt = Date.now();
     renderActiveCheckpoint();
   } else {
     finishExam();
@@ -112,9 +134,14 @@ function stepThrough() {
 
 function pausePlayback() {
   if (state.timer) clearTimeout(state.timer);
+  if (state.progressTimer) clearInterval(state.progressTimer);
   state.timer = null;
+  state.progressTimer = null;
   state.isPlaying = false;
   nodes.pauseBtn.disabled = true;
+  if (state.result && state.activeIndex >= 0 && state.activeIndex < state.result.timeline.length - 1) {
+    renderExamProgress("paused");
+  }
 }
 
 async function resetExam() {
@@ -122,6 +149,8 @@ async function resetExam() {
   await fetchJson("/api/reset", { method: "POST" });
   state.result = null;
   state.activeIndex = -1;
+  state.checkpointStartedAt = null;
+  setOperationLocked(false);
   nodes.resultPanel.classList.add("hidden");
   nodes.activeCheckpointBadge.textContent = "Pending";
   nodes.activeCheckpointBadge.className = "status-badge pending";
@@ -129,6 +158,7 @@ async function resetExam() {
   renderMarketChart();
   renderScorecard();
   renderEmptyCheckpoint();
+  renderExamProgress("idle");
 }
 
 function scheduleNext() {
@@ -136,16 +166,19 @@ function scheduleNext() {
   state.timer = setTimeout(() => {
     if (state.activeIndex < state.result.timeline.length - 1) {
       state.activeIndex += 1;
+      state.checkpointStartedAt = Date.now();
       renderActiveCheckpoint();
       scheduleNext();
     } else {
       finishExam();
     }
-  }, 3600);
+  }, CHECKPOINT_DURATION_MS);
 }
 
 function finishExam() {
   pausePlayback();
+  setOperationLocked(false);
+  renderExamProgress("complete");
   renderResult();
 }
 
@@ -169,11 +202,13 @@ function renderChoices() {
       state.selectedCandidateId = button.dataset.candidate;
       state.result = null;
       state.activeIndex = -1;
+      state.checkpointStartedAt = null;
       renderChoices();
       renderEmptyTimeline();
       renderMarketChart();
       renderEmptyCheckpoint();
       renderScorecard();
+      renderExamProgress("idle");
       nodes.resultPanel.classList.add("hidden");
     });
   });
@@ -216,6 +251,63 @@ function renderActiveCheckpoint() {
   renderTimeline();
   renderMarketChart(checkpoint.id, verdict.status);
   renderScorecard();
+  renderExamProgress("running");
+}
+
+function setOperationLocked(locked) {
+  document.querySelectorAll("[data-candidate]").forEach((button) => {
+    button.disabled = locked;
+    button.setAttribute("aria-disabled", String(locked));
+  });
+  nodes.beginBtn.disabled = locked;
+  nodes.stepBtn.disabled = locked;
+}
+
+function startProgressTicker() {
+  if (state.progressTimer) clearInterval(state.progressTimer);
+  state.progressTimer = setInterval(() => renderExamProgress("running"), 250);
+}
+
+function renderExamProgress(mode) {
+  const total = state.result?.timeline?.length || 5;
+  const current = state.activeIndex >= 0 ? state.activeIndex + 1 : 0;
+  const elapsedInWindow = state.checkpointStartedAt ? Math.min(Date.now() - state.checkpointStartedAt, CHECKPOINT_DURATION_MS) : 0;
+  const runningProgress = state.isPlaying && current > 0
+    ? ((Math.max(current - 1, 0) * CHECKPOINT_DURATION_MS + elapsedInWindow) / (total * CHECKPOINT_DURATION_MS)) * 100
+    : (current / total) * 100;
+  const progress = Math.max(0, Math.min(100, Math.round(runningProgress)));
+  const remainingWindows = Math.max(total - current, 0);
+  const remainingInCurrent = state.isPlaying && current > 0 ? Math.ceil((CHECKPOINT_DURATION_MS - elapsedInWindow) / 1000) : 0;
+  const remainingSeconds = mode === "complete" ? 0 : remainingWindows * Math.ceil(CHECKPOINT_DURATION_MS / 1000) + remainingInCurrent;
+
+  nodes.examProgress.className = `exam-progress ${mode}`;
+  nodes.examProgressBar.style.width = `${progress}%`;
+
+  if (mode === "running") {
+    nodes.examProgressLabel.textContent = "Road test in progress";
+    nodes.examProgressStatus.textContent = `Candidate is locked · Window ${current} of ${total}`;
+    nodes.examProgressMeta.textContent = `Estimated remaining time: ${remainingSeconds}s. Candidate selection and restart are locked until the result is issued.`;
+    return;
+  }
+
+  if (mode === "paused") {
+    nodes.examProgressLabel.textContent = "Road test paused";
+    nodes.examProgressStatus.textContent = `Paused at window ${current} of ${total}`;
+    nodes.examProgressMeta.textContent = "Candidate selection remains locked. Use Reset Exam to clear the current run.";
+    return;
+  }
+
+  if (mode === "complete") {
+    nodes.examProgressLabel.textContent = "Road test complete";
+    nodes.examProgressStatus.textContent = "License report is ready.";
+    nodes.examProgressMeta.textContent = "Review the result dialog, then reset or choose another candidate.";
+    nodes.examProgressBar.style.width = "100%";
+    return;
+  }
+
+  nodes.examProgressLabel.textContent = "Ready for road test";
+  nodes.examProgressStatus.textContent = "Select a candidate, then begin.";
+  nodes.examProgressMeta.textContent = "The operation area will lock while the exam is running.";
 }
 
 function renderEmptyCheckpoint() {

@@ -83,6 +83,17 @@
             <span id="activeCheckpointBadge" class="status-badge pending">Pending</span>
           </div>
 
+          <section id="examProgress" class="exam-progress idle" aria-live="polite">
+            <div>
+              <span id="examProgressLabel">Ready for road test</span>
+              <strong id="examProgressStatus">Select a candidate, then begin.</strong>
+            </div>
+            <div class="progress-meter" aria-hidden="true">
+              <i id="examProgressBar"></i>
+            </div>
+            <p id="examProgressMeta">The operation area will lock while the exam is running.</p>
+          </section>
+
           <div id="timeline" class="timeline"></div>
 
           <section id="marketChart" class="market-chart" aria-label="Simulated paper market chart"></section>
